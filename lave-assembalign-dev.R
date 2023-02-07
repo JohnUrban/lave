@@ -205,8 +205,12 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
   ## query gaps 
   if(left.as.NA(gappy)){gappy <- c(qgon.mid+qgon.span*gap.scale, qgon.mid-qgon.span*gap.scale, tgon.mid+tgon.span*gap.scale, tgon.mid-tgon.span*gap.scale)}
   print(gappy)
-  if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=gappy[1], bottom=gappy[2], col=gapcol, border=gapbcol, scale = querylengthnorm, borderwiddth=gapborderwidth)}
-  if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=gappy[3], bottom=gappy[4], col=gapcol, border=gapbcol, scale=targetlengthnorm, borderwiddth=gapborderwidth)}
+  if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=gappy[1], bottom=gappy[2], 
+                                        col=gapcol, border=gapbcol, scale = querylengthnorm, polygon.border.width=gapborderwidth)
+    }
+  if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=gappy[3], bottom=gappy[4], 
+                                         col=gapcol, border=gapbcol, scale=targetlengthnorm, polygon.border.width=gapborderwidth)
+    }
 }
 
 
@@ -410,11 +414,11 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   # gappy.scale=c(0.75, 0.25)
   if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=xlim[1]*gappy.scale[1], 
                                         bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
-                                        scale = querylengthnorm, yaxisAln = TRUE) #, polygon.border.width=gapborderwidth)}
+                                        scale = querylengthnorm, yaxisAln = TRUE, polygon.border.width=gapborderwidth)
   }
   if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=xlim[1]*gappy.scale[1], 
                                          bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
-                                         scale=targetlengthnorm) #, polygon.border.width==gapborderwidth)}
+                                         scale=targetlengthnorm), polygon.border.width=gapborderwidth)
   }
 }
   
