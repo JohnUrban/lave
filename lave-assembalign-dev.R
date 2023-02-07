@@ -202,7 +202,7 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
                                 tend=NA, qoffset=0, toffset=0, longest2shortest=TRUE, qspecificticks=FALSE, 
                                 tspecificticks=FALSE, xlim=NA, force.int=TRUE, noyaxisticks=FALSE, inner.qlabels=FALSE, 
                                 inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, 
-                                orderOfAppearance=FALSE, segwd=2, changestrand=TRUE, 
+                                orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, segwd=2, changestrand=TRUE, 
                                 gappy.scale=c(0.75, 0.25), ...){
   ## paf need not be PAF object, but should be dataframe w/ following indexes: query, qstart, qend, target, tstart, tend, strand, and mapq --- mapq not currently used, but will have option soon
   ##  -- if do not have genome files (querylengths, targetlengths) -- then they are learned from PAF in which case you need the DataFrame to be set up as a PAF: q,qlen,qend,strand,t,tlen,tstart,tend,...
@@ -234,6 +234,9 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   ## xticknorm.target=1e6, xticknorm.query=1e6, plotqueryticks=FALSE
   ## orderOfAppearance -- the contigs will appear in the order they appear in the PAF, not shortToLong, LongToShort
   ##    Overrides longestToShortest TRUE/FALSE.
+  ## targetOrder -- given a c() vector of the names of target sequences in the order you want them to appear.
+  ##              -- This fails to execute if orderByAppearance is flagged.
+  ## queryOrder -- similar to target order, but for query seqs. Can give same vector, but it is kept separate to allow flexibility in orders.
   ## changestrand -- when revcomping, this changes the strand of the output so colors match accordingly. If something mapped to the neg strand of fwd, then it maps to pos of rev.
   
   ## If a paf is not given, use this as default
@@ -256,7 +259,8 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   if(sum(is.na(querylengths))>0){
     querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, 
                                                longest2shortest = longest2shortest, 
-                                               orderOfAppearance = orderOfAppearance)
+                                               orderOfAppearance = orderOfAppearance,
+                                               orderByGiven = queryOrder)
   }
   
   ## If targetlengths not given, use all from longest to shortest
@@ -264,7 +268,8 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
     #targetlengthnorm=1 on purpose, since that was already applied to PAF above in experimental section
     targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm = 1, 
                                                  longest2shortest = longest2shortest, 
-                                                 orderOfAppearance = orderOfAppearance)
+                                                 orderOfAppearance = orderOfAppearance,
+                                                 orderByGiven = targetOrder)
   }
   
   ## If revcomp lists are given, revcomp the PAF entries -- will return input PAF if both rc.lists are NA
@@ -738,9 +743,11 @@ draw_arrowgon <- function(left, right, top, bottom, strand, col, border, xscale=
   }
 }
 
-get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE){
+get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
     querylengths <- unique(paf[,1:2])
+  } else if ( !(is.na(orderByGiven)) ) {
+    querylengths <- unique(paf[ order(factor(paf$query, levels=orderByGiven)), 1:2])
   } else {
     querylengths <- unique(paf[order(paf$qlen, decreasing = longest2shortest),1:2])
   }
@@ -752,12 +759,15 @@ get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=T
   return(querylengths)
 }
 
-get_target_lengths_from_paf <- function(paf, targetlengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE){
+get_target_lengths_from_paf <- function(paf, targetlengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
     targetlengths <- unique(paf[,6:7])
+  } else if ( !(is.na(orderByGiven)) ) {
+    targetlengths <- unique(paf[ order(factor(paf$target, levels=orderByGiven)), 6:7])
   } else {
     targetlengths <- unique(paf[order(paf$tlen, decreasing = longest2shortest),6:7])
   }
+
   colnames(targetlengths) <- c("chr", "len")
   targetlengths$len <- targetlengths$len*targetlengthnorm
   targetlengths$cumsum <- cumsum(targetlengths$len)
