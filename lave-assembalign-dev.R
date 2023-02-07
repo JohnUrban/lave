@@ -693,7 +693,7 @@ revcompbed <- function(bed=NA, tigs=NA, rc.list=NA, rename=TRUE, changestrand=TR
 gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="white", scale=1, offset=0, 
                    addlabels=FALSE, labelcex=1, labelpos=1, breakstr=" |-|_|,|\t|\n", laby=NA, font=2, 
                    intensity.color=NA, intensity.column="score", intensity.invert=FALSE, addstrand=FALSE, 
-                   addstrandlabel=FALSE, yaxisAln=FALSE, intensity.fxn=identity, as.segments=FALSE){
+                   addstrandlabel=FALSE, yaxisAln=FALSE, intensity.fxn=identity, as.segments=FALSE, polygon.border.width=0.1){
   ## tigs (e.g. faltigs object), gaps (e.g. falcgaps object), top (e.g.1), bottom (e.g. 0.9)
   ## Require all arguments be provided explicitly to this fxn
   ## if addlabels set to true, labels need to be in "name" column of dataframe
@@ -748,7 +748,7 @@ gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="whi
           segments(x0 = left, x1 = right, y0 = y, y1 = y, col = rgb(intensity.color[1], intensity.color[2], intensity.color[3]))
           
       } else {
-        polygon(x = c(left, left, right, right, left), y = c(bottom, top, top, bottom, bottom), col = pcol, border = border)
+        polygon(x = c(left, left, right, right, left), y = c(bottom, top, top, bottom, bottom), col = pcol, border = border, lwd=polygon.border.width)
       }
       if(addlabels){if(is.na(laby)){laby<-bottom}; text(x = (left+right)/2, y = laby, labels=paste(strsplit(gaps$name[i], split=breakstr)[[1]], collapse="\n"), cex=labelcex, pos=labelpos, srt=0, font=font)} #; pos<-getpos[pos]} 
       if(addstrandlabel){text(x = (left+right)/2, y = (top+bottom)/2, labels=gaps$strand[i], cex=labelcex, font=font)} #pos=labelpos, srt=0, }
