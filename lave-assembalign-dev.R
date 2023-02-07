@@ -190,7 +190,20 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
 
 
 
-assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA, querygaps=NA, rc.querylist=NA, rc.targetlist=NA, cadd=c(1,2,3), step=NA, goncol=NA, bgoncol=NA, pos.goncol=NA, pos.bgoncol="black", neg.goncol=NA, neg.bgoncol="black", tigcol=NA, btigcol="black", qtigcol=NA, qbtigcol="black", ttigcol=NA, tbtigcol="black", querylengthnorm=1, targetlengthnorm=1,querytiglabels=TRUE,targettiglabels=TRUE,ylabels=c("target","query"), gapcol="white", gapbcol="white", xticknorm.target=1e6, xticknorm.query=1e6, plotqueryticks=FALSE, xlab="Pos (Mb)", tstep=50e6, qstep=50e6, ttickline=0, qtickline=0, t.padj=0, q.padj=0, xlabline=1.5, font=1, ygonpars=NA, ylim=NA, qgonlimits="small",tgonlimits="small", qstart=NA, qend=NA, tstart=NA, tend=NA, qoffset=0, toffset=0, longest2shortest=TRUE, qspecificticks=FALSE, tspecificticks=FALSE, xlim=NA, force.int=TRUE, noyaxisticks=FALSE, inner.qlabels=FALSE, inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, orderOfAppearance=FALSE, segwd=2, changestrand=TRUE, gappy.scale=c(0.75, 0.25), ...){
+assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA, querygaps=NA, 
+                                rc.querylist=NA, rc.targetlist=NA, cadd=c(1,2,3), step=NA, goncol=NA, bgoncol=NA, 
+                                pos.goncol=NA, pos.bgoncol="black", neg.goncol=NA, neg.bgoncol="black", tigcol=NA, 
+                                btigcol="black", qtigcol=NA, qbtigcol="black", ttigcol=NA, tbtigcol="black", 
+                                querylengthnorm=1, targetlengthnorm=1, querytiglabels=TRUE, targettiglabels=TRUE,
+                                ylabels=c("target","query"), gapcol="white", gapbcol="white", xticknorm.target=1e6, 
+                                xticknorm.query=1e6, plotqueryticks=FALSE, xlab="Pos (Mb)", tstep=50e6, qstep=50e6, 
+                                ttickline=0, qtickline=0, t.padj=0, q.padj=0, xlabline=1.5, font=1, ygonpars=NA, 
+                                ylim=NA, qgonlimits="small",tgonlimits="small", qstart=NA, qend=NA, tstart=NA, 
+                                tend=NA, qoffset=0, toffset=0, longest2shortest=TRUE, qspecificticks=FALSE, 
+                                tspecificticks=FALSE, xlim=NA, force.int=TRUE, noyaxisticks=FALSE, inner.qlabels=FALSE, 
+                                inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, 
+                                orderOfAppearance=FALSE, segwd=2, changestrand=TRUE, 
+                                gappy.scale=c(0.75, 0.25), ...){
   ## paf need not be PAF object, but should be dataframe w/ following indexes: query, qstart, qend, target, tstart, tend, strand, and mapq --- mapq not currently used, but will have option soon
   ##  -- if do not have genome files (querylengths, targetlengths) -- then they are learned from PAF in which case you need the DataFrame to be set up as a PAF: q,qlen,qend,strand,t,tlen,tstart,tend,...
   ## querylengths and targetlengths should be renamed -- they specify data frames w/ 2 columns: seqnames, seqlengths
@@ -241,13 +254,17 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   
   ## If querylengths not given, use all from longest to shortest
   if(sum(is.na(querylengths))>0){
-    querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, longest2shortest = longest2shortest, orderOfAppearance = orderOfAppearance)
+    querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, 
+                                               longest2shortest = longest2shortest, 
+                                               orderOfAppearance = orderOfAppearance)
   }
   
   ## If targetlengths not given, use all from longest to shortest
   if(sum(is.na(targetlengths))>0){
     #targetlengthnorm=1 on purpose, since that was already applied to PAF above in experimental section
-    targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm = 1, longest2shortest = longest2shortest, orderOfAppearance = orderOfAppearance)
+    targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm = 1, 
+                                                 longest2shortest = longest2shortest, 
+                                                 orderOfAppearance = orderOfAppearance)
   }
   
   ## If revcomp lists are given, revcomp the PAF entries -- will return input PAF if both rc.lists are NA
@@ -296,24 +313,32 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   ## Begin plotting
   
   # plot(seq(0,x.max, length.out = 16), seq(0,x.max, length.out = 16), xlim=xlim, ylim=xlim, type="n", yaxt="n", xaxt="n", xlab="", ylab="", font=font, ...)
-  plot(seq(0,x.max, length.out = 16), seq(0,y.max, length.out = 16), xlim=xlim, ylim=ylim, type="n", yaxt="n", xaxt="n", xlab="", ylab="", font=font, ...)
+  plot(seq(0,x.max, length.out = 16), seq(0,y.max, length.out = 16), xlim=xlim, ylim=ylim, type="n", 
+       yaxt="n", xaxt="n", xlab="", ylab="", font=font, ...)
   
   mtext(side=1, text = xlab, line = xtext.line, cex=xtext.cex, font=font)
   mtext(side=2, text = xlab, line = xtext.line, cex=xtext.cex, font=font)
   
   
-  ans.tt <- assembalign.tticks(xlim=xlim,tstep=tstep,targetlengthnorm=targetlengthnorm,tspecificticks=tspecificticks,xticknorm.target=xticknorm.target,force.int=force.int)
+  ans.tt <- assembalign.tticks(xlim=xlim,tstep=tstep, targetlengthnorm=targetlengthnorm, tspecificticks=tspecificticks, 
+                               xticknorm.target=xticknorm.target,force.int=force.int)
   axis(side=1, ans.tt$x.at, ans.tt$labs, line = ttickline, padj=t.padj, font=font)
   
-  ans.qt <- assembalign.plotqueryticks(xlim=xlim, plotqueryticks=plotqueryticks, qspecificticks=qspecificticks,qoffset=qoffset,querylengths=querylengths,qstep=qstep,querylengthnorm=querylengthnorm, xticknorm.query=xticknorm.query,force.int=force.int,reverse.qlabels=reverse.qlabels)
+  ans.qt <- assembalign.plotqueryticks(xlim=xlim, plotqueryticks=plotqueryticks, qspecificticks=qspecificticks,
+                                       qoffset=qoffset,querylengths=querylengths, qstep=qstep, 
+                                       querylengthnorm=querylengthnorm, xticknorm.query=xticknorm.query, 
+                                       force.int=force.int,reverse.qlabels=reverse.qlabels)
   if(plotqueryticks){axis(side=2, at = ans.qt$x.at, labels = ans.qt$labs, line = qtickline, padj=q.padj, font=font, las=1)}
   
   
   ## Add query contig/scaffold boxes
-  assembalign.addqgons(qoffset=qoffset, qstartisna=qstartisna, querylengths=querylengths, qendisna=qendisna, qtigcol=qtigcol, cadd=cadd, qgonlimits=qgonlimits, querytiglabels=querytiglabels, dotplot=TRUE, border=qbtigcol)
+  assembalign.addqgons(qoffset=qoffset, qstartisna=qstartisna, querylengths=querylengths, qendisna=qendisna, 
+                       qtigcol=qtigcol, cadd=cadd, qgonlimits=qgonlimits, querytiglabels=querytiglabels, 
+                       dotplot=TRUE, border=qbtigcol)
   
   ## Add target contig/scaffold boxes
-  assembalign.addtgons(toffset=toffset, tstartisna=tstartisna, targetlengths=targetlengths, tendisna=tendisna, ttigcol=ttigcol, cadd=cadd, tgonlimits=tgonlimits, targettiglabels=targettiglabels, border=tbtigcol)
+  assembalign.addtgons(toffset=toffset, tstartisna=tstartisna, targetlengths=targetlengths, tendisna=tendisna, 
+                       ttigcol=ttigcol, cadd=cadd, tgonlimits=tgonlimits, targettiglabels=targettiglabels, border=tbtigcol)
   
   
   ## Draw dotplot line segments: code was basically transferred from pairwise approach, and "polygons" replaces with "segments". Can probably be optimized...
@@ -323,8 +348,13 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
     qstart <- querylengths$starts[querylengths$chr == query] + qoffset
     tstart <- targetlengths$starts[targetlengths$chr == target] + toffset
     positive.strand <- paf$strand[i] == "+"
-    
+
+    ## x0 and x1 (target): start/end always stay same :: query changes if negstrand
+    x0 = paf$tstart[i]+tstart
+    x1 = paf$tend[i]+tstart
     if(positive.strand){
+      y0 = paf$qstart[i]+qstart
+      y1 = paf$qend[i]+qstart
       if(sum(is.na(pos.goncol))>0){
         pgoncol <- i+cadd[3]
       }
@@ -332,7 +362,9 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
         pgoncol<-pos.goncol
       }
     }
-    else{
+    else{ # negative strand
+      y0 = paf$qend[i]+qstart
+      y1 = paf$qstart[i]+qstart
       if(sum(is.na(neg.goncol))>0){
         pgoncol <- i+cadd[3]
       }
@@ -340,7 +372,9 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
         pgoncol<-neg.goncol
       }
     } 
-    segments(x0 = paf$tstart[i]+tstart, x1 = paf$tend[i]+tstart, y0 = paf$qstart[i]+qstart, y1 = paf$qend[i]+qstart, col=pgoncol, lwd=segwd)
+    #segments(x0 = paf$tstart[i]+tstart, x1 = paf$tend[i]+tstart, y0 = paf$qstart[i]+qstart, y1 = paf$qend[i]+qstart, col=pgoncol, lwd=segwd)
+    segments(x0 = x0, x1 = x1, y0 = y0, y1 = y1, col=pgoncol, lwd=segwd)
+    
   }
   
   # ## Add Scaffold Gap info if provided - THERE CAN BE NO NA VALUES IN GAPS OBJECT
@@ -570,13 +604,13 @@ get_opposite_strand <- function(strand){
 
 revcomppaf <- function(paf=NA, querylengths=NA, targetlengths=NA, rc.querylist=NA, rc.targetlist=NA, rename=TRUE, changestrand=FALSE){
   ## Require all arguments be provided explicitly to this fxn
-  print(1)
+  #print(1)
   if(sum(is.na(c(paf))) > 0){return("Need to provide PAF.")}
   newpaf <- paf
   if(sum(is.na(rc.querylist))==0){
-    print(2)
+    #print(2)
     for (tig in rc.querylist){
-      print(3)
+      #print(3)
       len <- querylengths$len[querylengths$chr == tig]
       newpaf$qstart[paf$query == tig] <- len - paf$qend[paf$query == tig] + 1 ## adjust pos and make the end = start
       newpaf$qend[paf$query == tig] <- len - paf$qstart[paf$query == tig] + 1 ## adjust pos and make the start = end
@@ -585,7 +619,7 @@ revcomppaf <- function(paf=NA, querylengths=NA, targetlengths=NA, rc.querylist=N
     }
   }
   if(sum(is.na(rc.targetlist))==0){
-    print(4)
+    #print(4)
     for (tig in rc.targetlist){
       len <- targetlengths$len[targetlengths$chr == tig]
       newpaf$tstart[paf$target == tig] <- len - paf$tend[paf$target == tig] + 1 ## adjust pos and make the end = start
@@ -594,7 +628,7 @@ revcomppaf <- function(paf=NA, querylengths=NA, targetlengths=NA, rc.querylist=N
       if(changestrand){newpaf$strand[paf$target == tig] <- get_opposite_strand(newpaf$strand[paf$target == tig])}
     }
   }
-  print(5)
+  #print(5)
   #RETURN
   newpaf
 }
@@ -669,6 +703,10 @@ gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="whi
       # polygon(x = c(left, left, right, right, left), y = c(bottom, top, top, bottom, bottom), col = pcol, border = border)
       # if(arrowgon){
       if(addstrand){
+        # print(c("left", left))
+        # print(c("right", right))
+        # print(c("top", top))
+        # print(c("bottom", bottom))
         draw_arrowgon(left, right, top, bottom, gaps$strand[i], pcol, border)
       }else if (as.segments){
         if(sum(is.na(intensity.color)==0)){
