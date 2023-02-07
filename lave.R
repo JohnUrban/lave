@@ -145,7 +145,7 @@ assembalign <- function(falctigs=NA, canutigs=NA, paf=NA, canugaps=NA, falcgaps=
 }
 
 ## DEFINE FUNCTION FOR ADDING GAP INFO TO ASSEMBLALIGN PLOT
-gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="white"){
+gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="white", borderwidth=1){
   ## tigs (e.g. faltigs object), gaps (e.g. falcgaps object), top (e.g.1), bottom (e.g. 0.9)
   ## Require all arguments be provided explicitly to this fxn
   if(sum(is.na(c(tigs, gaps, top, bottom))) > 0){return("Need to provide all arguments.")}
@@ -161,7 +161,7 @@ gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="whi
       start <- tigs$starts[tigs$chr == tig]
       left <- gaps$start[i]+start
       right <- gaps$end[i]+start
-      polygon(x = c(left, left, right, right, left), y = c(bottom, top, top, bottom, bottom), col = col, border = border)
+      polygon(x = c(left, left, right, right, left), y = c(bottom, top, top, bottom, bottom), col = col, border = border, lwd = borderwidth)
       
     }
   }  
