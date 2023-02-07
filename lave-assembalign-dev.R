@@ -690,11 +690,14 @@ revcompbed <- function(bed=NA, tigs=NA, rc.list=NA, rename=TRUE, changestrand=TR
   newbed
 }
 
-gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="white", scale=1, offset=0, addlabels=FALSE, labelcex=1, labelpos=1, breakstr=" |-|_|,|\t|\n", laby=NA, font=2, intensity.color=NA, intensity.column="score", intensity.invert=FALSE, addstrand=FALSE, addstrandlabel=FALSE, yaxisAln=FALSE, intensity.fxn=identity, as.segments=FALSE){
+gapaln <- function(tigs=NA, gaps=NA, top=NA, bottom=NA, col="white", border="white", scale=1, offset=0, 
+                   addlabels=FALSE, labelcex=1, labelpos=1, breakstr=" |-|_|,|\t|\n", laby=NA, font=2, 
+                   intensity.color=NA, intensity.column="score", intensity.invert=FALSE, addstrand=FALSE, 
+                   addstrandlabel=FALSE, yaxisAln=FALSE, intensity.fxn=identity, as.segments=FALSE){
   ## tigs (e.g. faltigs object), gaps (e.g. falcgaps object), top (e.g.1), bottom (e.g. 0.9)
   ## Require all arguments be provided explicitly to this fxn
   ## if addlabels set to true, labels need to be in "name" column of dataframe
-  
+  print("NEW GAPALN - lave-assembalign-dev.R")
   if(sum(is.na(c(tigs, gaps, top, bottom))) > 0){return("Need to provide all arguments.")}
   ## Ensure tigs has 4 colums
   if(!(dim(tigs)[2] == 4)){return("Tigs should be a 4-column dataframe")}
