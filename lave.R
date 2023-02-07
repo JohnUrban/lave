@@ -2,7 +2,7 @@ library(KernSmooth)
 library(LSD)
 library(lattice)
 library(raster)
-library(rasterVis)
+#library(rasterVis)	#commented out 2023-02-07; rasterVis is no longer supported it appears.
 
 ## TODO: use $stop instad of $end to better interface w/ other bio suites like Sushi
 
