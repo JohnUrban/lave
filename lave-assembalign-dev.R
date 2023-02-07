@@ -769,7 +769,7 @@ draw_arrowgon <- function(left, right, top, bottom, strand, col, border, xscale=
 get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
     querylengths <- unique(paf[,1:2])
-  } else if ( !(is.na(orderByGiven)) ) {
+  } else if ( sum(is.na(orderByGiven)) == 0 ) ) {
     querylengths <- unique(paf[ order(factor(paf$query, levels=orderByGiven)), 1:2])
   } else {
     querylengths <- unique(paf[order(paf$qlen, decreasing = longest2shortest),1:2])
@@ -785,7 +785,7 @@ get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=T
 get_target_lengths_from_paf <- function(paf, targetlengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
     targetlengths <- unique(paf[,6:7])
-  } else if ( !(is.na(orderByGiven)) ) {
+  } else if ( sum(is.na(orderByGiven)) == 0 ) {
     targetlengths <- unique(paf[ order(factor(paf$target, levels=orderByGiven)), 6:7])
   } else {
     targetlengths <- unique(paf[order(paf$tlen, decreasing = longest2shortest),6:7])
