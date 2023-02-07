@@ -375,7 +375,7 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   
   ## Optionall add GRID LINES in background
   if(grid.lines){
-    print(targetlengths$offset[2:length(targetlengths$offset)])
+    print(targetlengths)
     abline(v=targetlengths$offset[2:length(targetlengths$offset)], lty=3)
     abline(h=querylengths$offset[2:length(querylengths$offset)], lty=3)
   }
@@ -426,13 +426,6 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=xlim[1]*gappy.scale[1], 
                                          bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
                                          scale=targetlengthnorm, polygon.border.width=gapborderwidth)
-  }
-  
-  
-  if(grid.lines){
-    print(targetlengths$offset[2:length(targetlengths$offset)])
-    abline(v=targetlengths$offset[2:length(targetlengths$offset)], lty=3)
-    abline(h=querylengths$offset[2:length(querylengths$offset)], lty=3)
   }
 }
   
