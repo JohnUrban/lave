@@ -230,7 +230,7 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
                                 tspecificticks=FALSE, xlim=NA, force.int=TRUE, noyaxisticks=FALSE, inner.qlabels=FALSE, 
                                 inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, 
                                 orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, segwd=2, changestrand=TRUE, 
-                                gappy.scale=c(0.75, 0.25), gapborderwiddth=0.1, ...){
+                                gappy.scale=c(0.75, 0.25), gapborderwidth=0.1, ...){
   ## paf need not be PAF object, but should be dataframe w/ following indexes: query, qstart, qend, target, tstart, tend, strand, and mapq --- mapq not currently used, but will have option soon
   ##  -- if do not have genome files (querylengths, targetlengths) -- then they are learned from PAF in which case you need the DataFrame to be set up as a PAF: q,qlen,qend,strand,t,tlen,tstart,tend,...
   ## querylengths and targetlengths should be renamed -- they specify data frames w/ 2 columns: seqnames, seqlengths
