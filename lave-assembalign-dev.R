@@ -411,11 +411,13 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=xlim[1]*gappy.scale[1], 
                                         bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
                                         scale = querylengthnorm, yaxisAln = TRUE) #, polygon.border.width=gapborderwidth)}
+  }
   if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=xlim[1]*gappy.scale[1], 
                                          bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
                                          scale=targetlengthnorm) #, polygon.border.width==gapborderwidth)}
+  }
 }
-
+  
 
 
 
