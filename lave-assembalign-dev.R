@@ -19,7 +19,7 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
                         xtext.line=1.5, xtext.cex=0.75, orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, 
                         changestrand=TRUE,  gappy=NA, gap.scale=0.1, gapborderwidth=0.1, y.qgons=1, y.tgons=0, qgon.halfwidth=NA, 
                         tgon.halfwidth=NA, add.new.level=NA, useQueryLengths.start=FALSE, useTargetLengths.start=FALSE, 
-                        pairwiseAlnGons=TRUE, ...){
+                        pairwiseAlnGons=TRUE, spaceBetweenTargetGons=NA, spaceBetweenQueryGons=NA, ...){
   ## VERSION 03: modularization.
   ##    Trying to modularize chunks of code into callable functions that can be shared between 
   ##    assembalign, assembalign.dotplot, and future functions that expand upon both.
@@ -231,7 +231,7 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
                                 inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, 
                                 orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, segwd=2, changestrand=TRUE, 
                                 gappy.scale=c(0.75, 0.25), gapborderwidth=0.1, 
-                                grid.lines=FALSE, grid.col="grey", grid.lwd=0.1, ...){
+                                grid.lines=FALSE, grid.col="grey", grid.lwd=0.5, ...){
   ## paf need not be PAF object, but should be dataframe w/ following indexes: query, qstart, qend, target, tstart, tend, strand, and mapq --- mapq not currently used, but will have option soon
   ##  -- if do not have genome files (querylengths, targetlengths) -- then they are learned from PAF in which case you need the DataFrame to be set up as a PAF: q,qlen,qend,strand,t,tlen,tstart,tend,...
   ## querylengths and targetlengths should be renamed -- they specify data frames w/ 2 columns: seqnames, seqlengths
@@ -377,8 +377,10 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   ## Optionall add GRID LINES in background
   if(grid.lines){
     #print(targetlengths)
-    abline(v=targetlengths$starts[2:length(targetlengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
-    abline(h=querylengths$starts[2:length(querylengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
+    # abline(v=targetlengths$starts[2:length(targetlengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
+    # abline(h=querylengths$starts[2:length(querylengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
+    abline(v=targetlengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
+    abline(h=querylengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
   }
   
   ## Draw dotplot line segments: code was basically transferred from pairwise approach, and "polygons" replaces with "segments". Can probably be optimized...
