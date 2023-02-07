@@ -408,8 +408,12 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   # ## Add Scaffold Gap info if provided - THERE CAN BE NO NA VALUES IN GAPS OBJECT
   # ## query gaps
   # gappy.scale=c(0.75, 0.25)
-  if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=xlim[1]*gappy.scale[1], bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, scale = querylengthnorm, yaxisAln = TRUE, borderwiddth=gapborderwidth)}
-  if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=xlim[1]*gappy.scale[1], bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, scale=targetlengthnorm, borderwiddth=gapborderwidth)}
+  if(sum(is.na(querygaps)) == 0){gapaln(tigs=querylengths, gaps=querygaps, top=xlim[1]*gappy.scale[1], 
+                                        bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
+                                        scale = querylengthnorm, yaxisAln = TRUE) #, polygon.border.width=gapborderwidth)}
+  if(sum(is.na(targetgaps)) == 0){gapaln(tigs=targetlengths, gaps=targetgaps, top=xlim[1]*gappy.scale[1], 
+                                         bottom=xlim[1]*gappy.scale[2], col=gapcol, border=gapbcol, 
+                                         scale=targetlengthnorm) #, polygon.border.width==gapborderwidth)}
 }
 
 
