@@ -5,7 +5,21 @@
 
 ##### V02: REDO ASSEMBALIGN WITH MORE GENERIC VARIABLE NAMES AND PLOT LABELING, RDNA UPDATES INCL ARROWS, COV, ETC
 ##### V03: MODULARIZATION, DOTPLOT, ETC
-assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA, querygaps=NA, rc.querylist=NA, rc.targetlist=NA, cadd=c(1,2,3), step=NA, goncol=NA, bgoncol=NA, pos.goncol=NA, pos.bgoncol="black", neg.goncol=NA, neg.bgoncol="black", tigcol=NA, btigcol=NA, qtigcol=NA, qbtigcol="black", ttigcol=NA, tbtigcol="black", querylengthnorm=1, targetlengthnorm=1,querytiglabels=TRUE,targettiglabels=TRUE,ylabels=c("target","query"), gapcol="white", gapbcol="white", xticknorm.target=1e6, xticknorm.query=1e6, plotqueryticks=FALSE, xlab="Pos (Mb)", tstep=50e6, qstep=50e6, ttickline=0, qtickline=0, t.padj=0, q.padj=0, xlabline=1.5, font=1, ygonpars=NA, ylim=c(-0.01,1.01), qgonlimits="small",tgonlimits="small", qstart=NA, qend=NA, tstart=NA, tend=NA, qoffset=0, toffset=0, longest2shortest=TRUE, qspecificticks=FALSE, tspecificticks=FALSE, xlim=NA, force.int=TRUE, noyaxisticks=FALSE, inner.qlabels=FALSE, inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, orderOfAppearance=FALSE, changestrand=TRUE,  gappy=NA, gap.scale=0.1, y.qgons=1, y.tgons=0, qgon.halfwidth=NA, tgon.halfwidth=NA, add.new.level=NA, useQueryLengths.start=FALSE, useTargetLengths.start=FALSE, pairwiseAlnGons=TRUE, ...){
+assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA, querygaps=NA, 
+                        rc.querylist=NA, rc.targetlist=NA, cadd=c(1,2,3), step=NA, goncol=NA, bgoncol=NA, 
+                        pos.goncol=NA, pos.bgoncol="black", neg.goncol=NA, neg.bgoncol="black", tigcol=NA, 
+                        btigcol=NA, qtigcol=NA, qbtigcol="black", ttigcol=NA, tbtigcol="black", querylengthnorm=1, 
+                        targetlengthnorm=1,querytiglabels=TRUE, targettiglabels=TRUE, ylabels=c("target","query"), 
+                        gapcol="white", gapbcol="white", xticknorm.target=1e6, xticknorm.query=1e6, 
+                        plotqueryticks=FALSE, xlab="Pos (Mb)", tstep=50e6, qstep=50e6, ttickline=0, qtickline=0, 
+                        t.padj=0, q.padj=0, xlabline=1.5, font=1, ygonpars=NA, ylim=c(-0.01,1.01), qgonlimits="small",
+                        tgonlimits="small", qstart=NA, qend=NA, tstart=NA, tend=NA, qoffset=0, toffset=0, 
+                        longest2shortest=TRUE, qspecificticks=FALSE, tspecificticks=FALSE, xlim=NA, force.int=TRUE, 
+                        noyaxisticks=FALSE, inner.qlabels=FALSE, inner.tlabels=FALSE, reverse.qlabels=FALSE, 
+                        xtext.line=1.5, xtext.cex=0.75, orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, 
+                        changestrand=TRUE,  gappy=NA, gap.scale=0.1, y.qgons=1, y.tgons=0, qgon.halfwidth=NA, 
+                        tgon.halfwidth=NA, add.new.level=NA, useQueryLengths.start=FALSE, useTargetLengths.start=FALSE, 
+                        pairwiseAlnGons=TRUE, ...){
   ## VERSION 03: modularization.
   ##    Trying to modularize chunks of code into callable functions that can be shared between 
   ##    assembalign, assembalign.dotplot, and future functions that expand upon both.
@@ -89,8 +103,11 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
   ## If querylengths not given, use all from longest to shortest
   ## CAUTION: querylengthnorm=1 on purpose, since that was already applied to PAF in above PAf-norm section
   if(sum(is.na(querylengths))>0){
-    querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, longest2shortest = longest2shortest, orderOfAppearance = orderOfAppearance)
-  } else {
+    querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, 
+                                               longest2shortest = longest2shortest, 
+                                               orderOfAppearance = orderOfAppearance,
+                                               orderByGiven = queryOrder)
+   } else {
     ## ensure this variable only has contigs from paf
     querylengths <- querylengths[querylengths$chr %in% unique(paf$query),]
   }
@@ -99,11 +116,17 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
   ## If targetlengths not given, use all from longest to shortest
   ## CAUTION: targetlengthnorm=1 on purpose, since that was already applied to PAF in above PAF-norm section
   if(sum(is.na(targetlengths))>0){
-    targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm = 1, longest2shortest = longest2shortest, orderOfAppearance = orderOfAppearance)
+    targetlengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, 
+                                               longest2shortest = longest2shortest, 
+                                               orderOfAppearance = orderOfAppearance,
+                                               orderByGiven = targetOrder)
   } else {
     ## ensure this variable only has contigs from paf
     targetlengths <- targetlengths[targetlengths$chr %in% unique(paf$target),]
   }
+  
+  
+ 
   
   
   ## REVCOMP_01: If revcomp lists are given, revcomp the PAF entries -- will return input PAF if both rc.lists are NA
