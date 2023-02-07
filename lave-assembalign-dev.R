@@ -375,8 +375,8 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   
   ## Optionall add GRID LINES in background
   if(grid.lines){
-    abline(v=targetlengths$offset[2:length(targetlengths$offset)], lty="--")
-    abline(h=querylengths$offset[2:length(querylengths$offset)], lty="--")
+    abline(v=targetlengths$offset[2:length(targetlengths$offset)], lty=3)
+    abline(h=querylengths$offset[2:length(querylengths$offset)], lty=3)
   }
   
   ## Draw dotplot line segments: code was basically transferred from pairwise approach, and "polygons" replaces with "segments". Can probably be optimized...
