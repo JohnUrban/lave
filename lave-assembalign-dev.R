@@ -769,7 +769,7 @@ draw_arrowgon <- function(left, right, top, bottom, strand, col, border, xscale=
 get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
     querylengths <- unique(paf[,1:2])
-  } else if ( sum(is.na(orderByGiven)) == 0 ) ) {
+  } else if ( sum(is.na(orderByGiven)) == 0 ) {
     querylengths <- unique(paf[ order(factor(paf$query, levels=orderByGiven)), 1:2])
   } else {
     querylengths <- unique(paf[order(paf$qlen, decreasing = longest2shortest),1:2])
