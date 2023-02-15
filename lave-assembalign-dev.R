@@ -379,8 +379,8 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
     #print(targetlengths)
     # abline(v=targetlengths$starts[2:length(targetlengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
     # abline(h=querylengths$starts[2:length(querylengths$starts)], lty=3, col=grid.col, lwd=grid.lwd)
-    if (sum(is.na(grid.subset.t)) == 0){ grid.v <- targetlengths$cumsum[grid.subset.t]}else{grid.v <- targetlengths}
-    if (sum(is.na(grid.subset.q)) == 0){ grid.h <- querylengths$cumsum[grid.subset.q]}else{grid.h <- querylengths}
+    if (sum(is.na(grid.subset.t)) == 0){ grid.v <- targetlengths$cumsum[grid.subset.t]}else{grid.v <- targetlengths$cumsum}
+    if (sum(is.na(grid.subset.q)) == 0){ grid.h <- querylengths$cumsum[grid.subset.q]}else{grid.h <- querylengths$cumsum}
     # abline(v=targetlengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
     # abline(h=querylengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
     abline(v=grid.v, lty=3, col=grid.col, lwd=grid.lwd)
