@@ -116,7 +116,7 @@ assembalign <- function(querylengths=NA, targetlengths=NA, paf=NA, targetgaps=NA
   ## If targetlengths not given, use all from longest to shortest
   ## CAUTION: targetlengthnorm=1 on purpose, since that was already applied to PAF in above PAF-norm section
   if(sum(is.na(targetlengths))>0){
-    targetlengths <- get_query_lengths_from_paf(paf, querylengthnorm=1, 
+    targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm=1, 
                                                longest2shortest = longest2shortest, 
                                                orderOfAppearance = orderOfAppearance,
                                                orderByGiven = targetOrder)
@@ -616,6 +616,26 @@ assembalign.alngons <- function(paf, ygonpars, querylengths, targetlengths, posi
       ygon <- c(ygonpars[2], ygonpars[1], ygonpars[1], ygonpars[2], ygonpars[2])
       # x = qstart, tstart, tend, qend, qstart
       x <- c(paf$qstart[i]+qstart, paf$tstart[i]+tstart, paf$tend[i]+tstart, paf$qend[i]+qstart, paf$qstart[i]+qstart)
+      
+      #### DEBUGGING HERE 2023-02-15 -- tstart variable is messed up.
+      #### DEBUGGING HERE 2023-02-15 -- tstart variable is messed up.
+      #### DEBUGGING HERE 2023-02-15 -- tstart variable is messed up.
+      #### DEBUGGING HERE 2023-02-15 -- tstart variable is messed up.
+      print(paf$qstart[i]+qstart)
+      print(paf$tstart[i]+tstart)
+      print(paf$tend[i]+tstart)
+      print(paf$qend[i]+qstart)
+      print(111111)
+      print(head(paf$tstart[i]))
+      print(tstart)
+      print(toffset)
+      print(target)
+      print(target %in% paf$target) #TRUE
+      print(target %in% targetlengths$chr) #FALSE -- must be something about how targetlengths is being made now,
+      ## prob introduced from new change to allow giving specified order.
+      # print(targetlengths)
+      
+      
     } else {
       # y = bottom, midhigh, bottom, bottom, midlow, bottom, bottom
       y.mid <- mean(c(ygonpars[2], ygonpars[1]))
@@ -795,11 +815,14 @@ draw_arrowgon <- function(left, right, top, bottom, strand, col, border, xscale=
 
 get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
+    print(c("QPAFLEN",1))
     querylengths <- unique(paf[,1:2])
   } else if ( sum(is.na(orderByGiven)) == 0 ) {
     querylengths <- unique(paf[ order(factor(paf$query, levels=orderByGiven)), 1:2])
+    print(c("QPAFLEN",2))
   } else {
     querylengths <- unique(paf[order(paf$qlen, decreasing = longest2shortest),1:2])
+    print(c("QPAFLEN",3))
   }
   colnames(querylengths) <- c("chr", "len")
   querylengths$len <- querylengths$len*querylengthnorm
@@ -811,6 +834,8 @@ get_query_lengths_from_paf <- function(paf,querylengthnorm=1, longest2shortest=T
 
 get_target_lengths_from_paf <- function(paf, targetlengthnorm=1, longest2shortest=TRUE, orderOfAppearance=FALSE, orderByGiven=NA){
   if(orderOfAppearance){
+######################################################################################3 HERE
+    print(c("TPAFLEN",1))
     targetlengths <- unique(paf[,6:7])
   } else if ( sum(is.na(orderByGiven)) == 0 ) {
     targetlengths <- unique(paf[ order(factor(paf$target, levels=orderByGiven)), 6:7])
