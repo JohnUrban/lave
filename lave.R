@@ -1,5 +1,5 @@
 library(KernSmooth)
-library(LSD)
+library(LSD)	
 library(lattice)
 library(raster)
 #library(rasterVis)	#commented out 2023-02-07; rasterVis is no longer supported it appears.
