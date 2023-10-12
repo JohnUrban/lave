@@ -319,12 +319,15 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   
   # if(sum(is.na(xlim))>0){xlim <- c(0,x.max)}
   if(sum(is.na(xlim))>0){xlim <- c(-0.05*x.max,x.max)} ## need to bring boxes outside plotting area
-  if(sum(is.na(ylim))>0){ylim <- c(-0.05*x.max,y.max)} ## xmax in pos1 on purpose so boxes same size
+  ##DEL-20231012-if(sum(is.na(ylim))>0){ylim <- c(-0.05*x.max,y.max)} ## xmax in pos1 on purpose so boxes same size
+  if(sum(is.na(ylim))>0){ylim <- c(-0.05*y.max,y.max)} ## xmax in pos1 on purpose so boxes same size
   
   
   ## qgonlimit setting
   qgonlimits <- c(xlim[1],0,0,xlim[1],xlim[1])
-  tgonlimits <- qgonlimits
+  modylim1 <- -0.05*y.max 
+  #tgonlimits <- qgonlimits
+  tgonlimits <- c(modylim1,0,0,modylim1,modylim1)
   
   
   
@@ -350,14 +353,16 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
        yaxt="n", xaxt="n", xlab="", ylab="", font=font, ...)
   
   mtext(side=1, text = xlab, line = xtext.line, cex=xtext.cex, font=font)
-  mtext(side=2, text = xlab, line = xtext.line, cex=xtext.cex, font=font)
+  mtext(side=2, text = xlab, line = xtext.line, cex=xtext.cex, font=font) ## TODO: ytext.line ytext.cex
   
-  
-  ans.tt <- assembalign.tticks(xlim=xlim,tstep=tstep, targetlengthnorm=targetlengthnorm, tspecificticks=tspecificticks, 
+
+  xticklim <- c(xlim[1],xlim[2]+tstep)
+  ans.tt <- assembalign.tticks(xlim=xticklim,tstep=tstep, targetlengthnorm=targetlengthnorm, tspecificticks=tspecificticks, 
                                xticknorm.target=xticknorm.target,force.int=force.int)
   axis(side=1, ans.tt$x.at, ans.tt$labs, line = ttickline, padj=t.padj, font=font)
   
-  ans.qt <- assembalign.plotqueryticks(xlim=xlim, plotqueryticks=plotqueryticks, qspecificticks=qspecificticks,
+  yticklim <- c(ylim[1],ylim[2]+qstep)
+  ans.qt <- assembalign.plotqueryticks(xlim=yticklim, plotqueryticks=plotqueryticks, qspecificticks=qspecificticks,
                                        qoffset=qoffset,querylengths=querylengths, qstep=qstep, 
                                        querylengthnorm=querylengthnorm, xticknorm.query=xticknorm.query, 
                                        force.int=force.int,reverse.qlabels=reverse.qlabels)
@@ -367,11 +372,11 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
   ## Add query contig/scaffold boxes
   assembalign.addqgons(qoffset=qoffset, qstartisna=qstartisna, querylengths=querylengths, qendisna=qendisna, 
                        qtigcol=qtigcol, cadd=cadd, qgonlimits=qgonlimits, querytiglabels=querytiglabels, 
-                       dotplot=TRUE, border=qbtigcol)
+                       dotplot=TRUE, border=qbtigcol, qgonside=2, las=1, line=2.8)
   
   ## Add target contig/scaffold boxes
   assembalign.addtgons(toffset=toffset, tstartisna=tstartisna, targetlengths=targetlengths, tendisna=tendisna, 
-                       ttigcol=ttigcol, cadd=cadd, tgonlimits=tgonlimits, targettiglabels=targettiglabels, border=tbtigcol)
+                       ttigcol=ttigcol, cadd=cadd, tgonlimits=tgonlimits, targettiglabels=targettiglabels, border=tbtigcol, tgonside=1, las=1, line=2.8)
   
   
   ## Optionall add GRID LINES in background
@@ -541,7 +546,8 @@ assembalign.initialize_plot <- function(x.max, xlim, ylim, font, xlab, xtext.lin
 
 
 
-assembalign.addqgons <- function(qstart, qoffset,qstartisna,querylengths,qendisna,qtigcol,cadd,qgonlimits, querytiglabels, dotplot=FALSE, useQueryLengths.start=FALSE, border="black"){
+assembalign.addqgons <- function(qstart, qoffset,qstartisna,querylengths,qendisna,qtigcol,cadd,qgonlimits, querytiglabels, dotplot=FALSE, 
+                                 useQueryLengths.start=FALSE, border="black",qgonside=3, las=2, line=1){
   start <- qoffset
   if(!(qstartisna)){start<-qstart}
   if(useQueryLengths.start){start <- querylengths$starts[1]}
@@ -554,14 +560,16 @@ assembalign.addqgons <- function(qstart, qoffset,qstartisna,querylengths,qendisn
     if(dotplot){
       gon.x <- qgonlimits
       gon.y <- c(start, start, end, end, start)
+      ## could also code "side", "las", "line" etc here... for now I have in assembalin.dotplot
     }
     polygon(x  = gon.x, y = gon.y, col = ptigcol, border=border)
-    if(querytiglabels){axis(side=3, tick=FALSE, at = mean(c(querylengths$cumsum[i]+qoffset,querylengths$starts[i]+qoffset)), labels = querylengths$chr[i], las=2, cex.axis=0.6)}
+    if(querytiglabels){axis(side=qgonside, tick=FALSE, at = mean(c(querylengths$cumsum[i]+qoffset,querylengths$starts[i]+qoffset)), labels = querylengths$chr[i], las=las, cex.axis=0.75, line = line, font=2)}
     if(qstartisna){start <- end+1}else{start<-qstart}
   }
 }
 
-assembalign.addtgons <- function(tstart, toffset, tstartisna, targetlengths, tendisna, ttigcol, cadd, tgonlimits, targettiglabels, useTargetLengths.start=FALSE, border="black"){
+assembalign.addtgons <- function(tstart, toffset, tstartisna, targetlengths, tendisna, ttigcol, cadd, tgonlimits, targettiglabels, 
+                                 useTargetLengths.start=FALSE, border="black", tgonside=1, las=2, line=1){
   start <- toffset
   if(!(tstartisna)){start<-tstart}
   if(useTargetLengths.start){start <- targetlengths$starts[1]}
@@ -572,7 +580,7 @@ assembalign.addtgons <- function(tstart, toffset, tstartisna, targetlengths, ten
     gon.x <- c(start, start, end, end, start)
     gon.y <- tgonlimits
     polygon(x = gon.x, y = gon.y, col = ptigcol, border=border)
-    if(targettiglabels){axis(side=1, tick=FALSE, at = mean(c(targetlengths$cumsum[i],targetlengths$starts[i])), labels = targetlengths$chr[i], las=2, cex.axis=0.6)}
+    if(targettiglabels){axis(side=tgonside, tick=FALSE, at = mean(c(targetlengths$cumsum[i],targetlengths$starts[i])), labels = targetlengths$chr[i], las=las, cex.axis=0.75, line = line, font=2)}
     if(tstartisna){start <- end+1}else{start<-tstart}
   }
 }
@@ -978,7 +986,8 @@ assembalign.plotqueryticks <- function(xlim, plotqueryticks, qspecificticks, qof
   x.ceil <- ceiling(xlim[2]/denom)
   if(plotqueryticks){
     if(qspecificticks){
-      ticks.xlim <- c(qoffset,max(querylengths$cumsum+qoffset))
+      ##DEPRECATED:2023-10-12::may-break-older-stuff::: ticks.xlim <- c(qoffset,max(querylengths$cumsum+qoffset))
+      ticks.xlim <- c(qoffset,xlim[2]) ## Can also try, c(qoffset,max(querylengths$cumsum+qoffset+qstep))
       denom <- finddenom(ticks.xlim[2])
       x.ceil <- ceiling(ticks.xlim[2]/denom)
       # xseq <- seq(qoffset,x.ceil*denom, qstep*querylengthnorm)
