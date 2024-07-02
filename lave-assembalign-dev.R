@@ -446,7 +446,9 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
 
 
 ### WRAPPERS WITH STANDARD DEFAULTS
-dotplot.it <- function(paf, MAPQ=0, LENGTH=0, gridlines=FALSE, gap=gap, main="X to Y", ylabels=c("Y","X")){
+dotplot.it <- function(paf, MAPQ=0, LENGTH=0, gridlines=FALSE, gap=gap, main="X to Y", ylabels=c("Y","X"),
+                       longest2shortest = FALSE, orderOfAppearance = TRUE, orderByGiven = NA,
+                       step=NA, nTicks=5){
   print("Simplified dot-plotting with standard defaults.")
   print("Wraps over assembalign.dotplot() ...")
   goncol=rgb(0,0,1,0.25); 
@@ -455,15 +457,37 @@ dotplot.it <- function(paf, MAPQ=0, LENGTH=0, gridlines=FALSE, gap=gap, main="X 
   qtigcol = rgb(0,0,0,0.35);
   ttigcol = rgb(0,0,0,0.65)
   gapcol<-"white"
-  assembalign.dotplot(paf=paf[paf$mapq >= MAPQ & paf$len >= LENGTH,],  querygaps = gap, targetgaps = gap, 
+  if(sum(is.na(step)) > 0){
+    stepInfo <- fully.auto.step.size(paf, nTicks=nTicks,
+                                     querylengthnorm = 1, 
+                                     targetlengthnorm = 1,
+                                     longest2shortest = longest2shortest, 
+                                     orderOfAppearance = orderOfAppearance, 
+                                     orderByGiven = orderByGiven)
+    tStep <- stepInfo$tStep
+    qStep <- stepInfo$qStep
+  }else{
+    tStep <- step
+    qStep <- step
+  }
+
+  assembalign.dotplot(paf=paf[paf$mapq >= MAPQ & paf$len >= LENGTH,],  
+                      orderOfAppearance = orderOfAppearance, longest2shortest = longest2shortest, 
+                      targetOrder = orderGivenBy, queryOrder = orderGivenBy,
+                      querygaps = gap, targetgaps = gap, 
                       grid.lines = gridlines, grid.lwd = 0.5, grid.col = "black",
-                      qspecificticks = TRUE, pos.goncol=goncol, neg.goncol = ngoncol, bgoncol=bgoncol, 
+                      pos.goncol=goncol, neg.goncol = ngoncol, bgoncol=bgoncol, 
                       qtigcol = qtigcol, ttigcol = ttigcol, 
-                      gapcol=gapcol, gapbcol=gapcol, plotqueryticks = TRUE, xticknorm.target = 1e6, 
-                      xticknorm.query = 1e6, xlab = "Pos (Mb)", querytiglabels = TRUE, 
-                      targettiglabels = TRUE, font=2, font.lab=2, font.axis=2, ylabels = ylabels, 
-                      xtext.line = 2.5, xtext.cex = 1, bty="n", tspecificticks = TRUE,
-                      segwd=1)
+                      gapcol=gapcol, gapbcol=gapcol, 
+                      qspecificticks = TRUE, tspecificticks = TRUE,
+                      plotqueryticks = TRUE, xticknorm.target = 1e6, 
+                      tstep = tStep, qstep = qStep,
+                      xticknorm.query = 1e6, 
+                      xlab = "Pos (Mb)", ylabels = ylabels, 
+                      querytiglabels = TRUE, targettiglabels = TRUE, 
+                      font=2, font.lab=2, font.axis=2, 
+                      xtext.line = 2.5, xtext.cex = 1, bty="n", 
+                      segwd=1, )
 }
 
 
@@ -471,6 +495,33 @@ dotplot.it <- function(paf, MAPQ=0, LENGTH=0, gridlines=FALSE, gap=gap, main="X 
 
 
 ####### HELPERS #####################################################
+auto.step.size <- function(len, nTicks, choices=c(1, 2, 2.5, 5, 10, 25, 50, 100, 200, 250, 500, 1e3, 2e3, 2.5e3, 5e3, 10e3, 20e3, 25e3, 50e3, 100e3, 200e3, 250e3, 500e3, 1e6, 2e6, 2.5e6, 5e6, 10e6, 20e6, 25e6, 50e6, 100e6, 200e6, 250e6, 500e6,1e9)){
+  rawStep <- len/nTicks
+  idx <- which.min(abs(rawStep - choices))
+  return(choices[idx])
+}
+
+fully.auto.step.size <- function(paf, nTicks=10, 
+                           querylengthnorm = 1, targetlengthnorm = 1,
+                           longest2shortest = FALSE, orderOfAppearance = TRUE, orderByGiven = NA){
+  #get_query_lengths_from_paf(BCC.paf, querylengthnorm = 1, longest2shortest = FALSE, orderOfAppearance = FALSE, orderByGiven = c("X","II","III","IV"))
+  querylengths <- get_query_lengths_from_paf(paf, querylengthnorm=querylengthnorm, 
+                                             longest2shortest = longest2shortest, 
+                                             orderOfAppearance = orderOfAppearance,
+                                             orderByGiven = orderByGiven)
+  targetlengths <- get_target_lengths_from_paf(paf, targetlengthnorm = targetlengthnorm, 
+                                               longest2shortest = longest2shortest, 
+                                               orderOfAppearance = orderOfAppearance,
+                                               orderByGiven = orderByGiven)
+  qLen <- querylengths$cumsum[length(querylengths$cumsum)]
+  tLen <- targetlengths$cumsum[length(targetlengths$cumsum)]
+  qStep <- auto.step.size(qLen,nTicks)
+  tStep <- auto.step.size(tLen,nTicks)
+  sameStep <- auto.step.size(mean(c(qLen,tLen)),nTicks)
+  return(list(qStep=qStep, tStep=tStep, step=sameStep))
+}
+
+
 
 left.as.NA <- function(x){
   # E.g.: sum(is.na(querylengths))>0
@@ -863,6 +914,31 @@ paf2bed <- function(paf, grab=c(6,8,9,1,12,5), names=c("chr","start","end","name
   return(bed)
 }
 
+draw_square_on_diagonal <- function(start, end, ...){
+  draw_square(start=start, 
+              end=end, 
+              xOffset=0, 
+              yOffset=0,
+              ...)
+}
+
+draw_square <- function(start, end, xOffset=0, yOffset=0, ...){
+  draw_rectangle(xStart = start + xOffset, 
+                 xEnd = end + xOffset, 
+                 yStart = start + yOffset, 
+                 yEnd = end + yOffset,
+                 ...)
+}
+
+draw_rectangle <- function(xStart, xEnd, yStart, yEnd, ...){
+  #col = par("fg"), lty = par("lty"), lwd = par("lwd"),
+  segments(x0=c(xStart,xStart,xEnd,xEnd), 
+           x1=c(xStart,xEnd,xEnd,xStart), 
+           y0=c(yStart,yEnd,yEnd,yStart), 
+           y1=c(yEnd,yEnd,yStart,yStart), 
+           ...)
+}
+
 draw_fwd_triangle <- function(x0, x1, y0, y1, ...){
   segments(x0=x0, x1=x0, y0=y0,y1=y1, ...)
   segments(x0=x0, x1=x1, y0=y0,y1=(y1+y0)/2, ...)
@@ -873,6 +949,7 @@ draw_rev_triangle <- function(x0, x1, y0, y1, ...){
   segments(x0=x0, x1=x1, y0=(y1+y0)/2,y1=y0, ...)
   segments(x0=x0, x1=x1, y0=(y1+y0)/2,y1=y1, ...)
 }
+
 
 
 draw_fwd_arrow_manual <- function(x0, x1, y0, y1, headwidth, headheight, ...){
