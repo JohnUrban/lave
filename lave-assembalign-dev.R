@@ -445,6 +445,27 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
 
 
 
+### WRAPPERS WITH STANDARD DEFAULTS
+dotplot.it <- function(paf, MAPQ=0, LENGTH=0, gridlines=FALSE, gap=gap, main="X to Y", ylabels=c("Y","X")){
+  print("Simplified dot-plotting with standard defaults.")
+  print("Wraps over assembalign.dotplot() ...")
+  goncol=rgb(0,0,1,0.25); 
+  ngoncol=rgb(1,0,0,0.25); 
+  bgoncol=NA; 
+  qtigcol = rgb(0,0,0,0.35);
+  ttigcol = rgb(0,0,0,0.65)
+  gapcol<-"white"
+  assembalign.dotplot(paf=paf[paf$mapq >= MAPQ & paf$len >= LENGTH,],  querygaps = gap, targetgaps = gap, 
+                      grid.lines = gridlines, grid.lwd = 0.5, grid.col = "black",
+                      qspecificticks = TRUE, pos.goncol=goncol, neg.goncol = ngoncol, bgoncol=bgoncol, 
+                      qtigcol = qtigcol, ttigcol = ttigcol, 
+                      gapcol=gapcol, gapbcol=gapcol, plotqueryticks = TRUE, xticknorm.target = 1e6, 
+                      xticknorm.query = 1e6, xlab = "Pos (Mb)", querytiglabels = TRUE, 
+                      targettiglabels = TRUE, font=2, font.lab=2, font.axis=2, ylabels = ylabels, 
+                      xtext.line = 2.5, xtext.cex = 1, bty="n", tspecificticks = TRUE,
+                      segwd=1)
+}
+
 
 
 
