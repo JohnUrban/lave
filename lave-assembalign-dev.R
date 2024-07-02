@@ -231,7 +231,7 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
                                 inner.tlabels=FALSE, reverse.qlabels=FALSE, xtext.line=1.5, xtext.cex=0.75, 
                                 orderOfAppearance=FALSE, targetOrder=NA, queryOrder=NA, segwd=2, changestrand=TRUE, 
                                 gappy.scale=c(0.75, 0.25), gapborderwidth=0.1, 
-                                grid.lines=FALSE, grid.col="grey", grid.lwd=0.5, grid.subset.t=NA, grid.subset.q=NA, ...){
+                                grid.lines=FALSE, grid.col="grey", grid.lwd=0.5,  grid.lty=3, grid.subset.t=NA, grid.subset.q=NA, ...){
   ## paf need not be PAF object, but should be dataframe w/ following indexes: query, qstart, qend, target, tstart, tend, strand, and mapq --- mapq not currently used, but will have option soon
   ##  -- if do not have genome files (querylengths, targetlengths) -- then they are learned from PAF in which case you need the DataFrame to be set up as a PAF: q,qlen,qend,strand,t,tlen,tstart,tend,...
   ## querylengths and targetlengths should be renamed -- they specify data frames w/ 2 columns: seqnames, seqlengths
@@ -388,8 +388,8 @@ assembalign.dotplot <- function(querylengths=NA, targetlengths=NA, paf=NA, targe
     if (sum(is.na(grid.subset.q)) == 0){ grid.h <- querylengths$cumsum[grid.subset.q]}else{grid.h <- querylengths$cumsum}
     # abline(v=targetlengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
     # abline(h=querylengths$cumsum, lty=3, col=grid.col, lwd=grid.lwd)
-    abline(v=grid.v, lty=3, col=grid.col, lwd=grid.lwd)
-    abline(h=grid.h, lty=3, col=grid.col, lwd=grid.lwd)
+    abline(v=grid.v, lty=grid.lty, col=grid.col, lwd=grid.lwd)
+    abline(h=grid.h, lty=grid.lty, col=grid.col, lwd=grid.lwd)
   }
   
   ## Draw dotplot line segments: code was basically transferred from pairwise approach, and "polygons" replaces with "segments". Can probably be optimized...
